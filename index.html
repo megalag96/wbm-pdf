@@ -105,11 +105,17 @@ function displayResults(data, page) {
         for (let i = 1; i < data.length; i++) {
             const archivedUrl = data[i][0];
             const [timestamp, originalUrl] = archivedUrl.split('|');
-            const pdfUrl = `https://web.archive.org/web/${timestamp}/${originalUrl}`;
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
-            resultsDiv.appendChild(resultItem);
+            
+            // Check if the split was successful
+            if (timestamp && originalUrl) {
+                const pdfUrl = `https://web.archive.org/web/${timestamp}/${originalUrl}`;
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
+                resultsDiv.appendChild(resultItem);
+            } else {
+                console.warn('Unexpected format in archived URL:', archivedUrl);
+            }
         }
 
         const prevButton = document.createElement('button');
