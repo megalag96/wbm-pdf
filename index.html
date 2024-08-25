@@ -87,7 +87,9 @@ function fetchArchivedPdfs(url, page) {
     fetch(cdxApiUrl)
         .then(response => response.json())
         .then(data => {
-            displayResults(data, page);
+            // Parse the response body
+            const parsedData = JSON.parse(data.contents);
+            displayResults(parsedData, page);
         })
         .catch(error => console.error('Error fetching data:', error));
 }
@@ -101,7 +103,9 @@ function displayResults(data, page) {
 
     if (data.length > 1) {
         for (let i = 1; i < data.length; i++) {
-            const pdfUrl = data[i][0];
+            const archivedUrl = data[i][0];
+            const [timestamp, originalUrl] = archivedUrl.split('|');
+            const pdfUrl = `https://web.archive.org/web/${timestamp}/${originalUrl}`;
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
             resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
