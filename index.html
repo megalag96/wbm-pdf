@@ -102,10 +102,12 @@ function displayResults(data, page) {
     if (data.length > 1) {
         for (let i = 1; i < data.length; i++) {
             const pdfUrl = data[i][0];
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
-            resultsDiv.appendChild(resultItem);
+            if (pdfUrl) { // Ensure the URL is valid and not undefined
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
+                resultsDiv.appendChild(resultItem);
+            }
         }
 
         const prevButton = document.createElement('button');
