@@ -76,65 +76,65 @@
 
 <script>
 document.getElementById('searchForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const url = document.getElementById('websiteUrl').value;
-    fetchArchivedPdfs(url, 1);
+  event.preventDefault();
+  const url = document.getElementById('websiteUrl').value;
+  fetchArchivedPdfs(url, 1); 
 });
 
 function fetchArchivedPdfs(url, page) {
-    const proxyUrl = "https://api.allorigins.win/get?url=";
-    const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=100&offset=' + (page-1) * 100 + '&showNumPages=true')}`;
+  const proxyUrl = "https://api.allorigins.win/get?url=";
+  const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=100&offset=' + (page-1) * 100 + '&showNumPages=true')}`; 
 
-    fetch(cdxApiUrl)
-        .then(response => response.json())
-        .then(data => {
-            // Parse the response body
-            const parsedData = JSON.parse(data.contents);
-            const totalResults = parsedData[0][0]; 
-            displayResults(parsedData, page, totalResults);
-        })
-        .catch(error => console.error('Error fetching data:', error));
+  fetch(cdxApiUrl)
+    .then(response => response.json())
+    .then(data => {
+      const parsedData = JSON.parse(data.contents);
+      const totalResults = parsedData[0][0]; 
+      displayResults(parsedData, page, totalResults); 
+    })
+    .catch(error => console.error('Error fetching data:', error));
 }
 
-function displayResults(data, page) {
-    const resultsDiv = document.getElementById('results');
-    const paginationDiv = document.getElementById('pagination');
-    const totalResultsDiv = document.getElementById('totalResults');
-    
-    resultsDiv.innerHTML = '';
-    paginationDiv.innerHTML = '';
-    totalResultsDiv.innerHTML = `Total Results: ${totalResults}`; 
-    
-    if (data.length > 1) {
-        for (let i = 1; i < data.length; i++) {
-          const originalUrl = data[i][0]; // Directly use the URL from the response
-          const pdfUrl = `https://web.archive.org/web/${originalUrl}`;
-          const resultItem = document.createElement('div');
-          resultItem.className = 'result-item';
-          resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
-          resultsDiv.appendChild(resultItem);
-        }
+function displayResults(data, page, totalResults) {
+  const resultsDiv = document.getElementById('results');
+  const paginationDiv = document.getElementById('pagination');
+  const totalResultsDiv = document.getElementById('totalResults'); 
 
-        const prevButton = document.createElement('button');
-        prevButton.textContent = 'Previous';
-        if (page === 1) {
-            prevButton.classList.add('disabled');
-        } else {
-            prevButton.addEventListener('click', () => fetchArchivedPdfs(document.getElementById('websiteUrl').value, page - 1));
-        }
-        paginationDiv.appendChild(prevButton);
+  resultsDiv.innerHTML = '';
+  paginationDiv.innerHTML = '';
+  totalResultsDiv.innerHTML = `Total Results: ${totalResults}`; 
 
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Next';
-        if (data.length < 21) {
-            nextButton.classList.add('disabled');
-        } else {
-            nextButton.addEventListener('click', () => fetchArchivedPdfs(document.getElementById('websiteUrl').value, page + 1));
-        }
-        paginationDiv.appendChild(nextButton);
-    } else {
-        resultsDiv.innerHTML = 'No PDFs found.';
+  if (data.length > 1) {
+    for (let i = 1; i < data.length; i++) {
+      const originalUrl = data[i][0]; 
+      const pdfUrl = `https://web.archive.org/web/${originalUrl}`;
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item';
+      resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
+      resultsDiv.appendChild(resultItem);
     }
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    if (page === 1) {
+      prevButton.classList.add('disabled');
+    } else {
+      prevButton.addEventListener('click', () => fetchArchivedPdfs(document.getElementById('websiteUrl').value, page - 1));
+    }
+    paginationDiv.appendChild(prevButton);
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    const totalPages = Math.ceil(totalResults / 100); 
+    if (page === totalPages) {
+      nextButton.classList.add('disabled');
+    } else {
+      nextButton.addEventListener('click', () => fetchArchivedPdfs(document.getElementById('websiteUrl').value, page + 1));
+    }
+    paginationDiv.appendChild(nextButton);
+  } else {
+    resultsDiv.innerHTML = 'No PDFs found.';
+  }
 }
 </script>
 
