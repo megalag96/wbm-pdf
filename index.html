@@ -83,16 +83,25 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
 
 function fetchArchivedPdfs(url, page) {
   const proxyUrl = "https://api.allorigins.win/get?url=";
-  const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=100&offset=' + (page-1) * 100 + '&showNumPages=true')}`; 
+  const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=100&offset=' + (page - 1) * 100 + '&showNumPages=true')}`;
 
   fetch(cdxApiUrl)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) { // Check if the response status is OK
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
       const parsedData = JSON.parse(data.contents);
-      const totalResults = parsedData[0][0]; 
-      displayResults(parsedData, page, totalResults); 
+      const totalResults = parsedData[0][0];
+      displayResults(parsedData, page, totalResults);
     })
-    .catch(error => console.error('Error fetching data:', error));
+    .catch(error => {
+      console.error('Error fetching or parsing data:', error);
+      // Display an error message to the user (e.g., using an alert or updating the resultsDiv)
+      resultsDiv.innerHTML = 'An error occurred. Please try again later.'; 
+    });
 }
 
 function displayResults(data, page, totalResults) {
