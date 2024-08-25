@@ -81,7 +81,8 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
 });
 
 function fetchArchivedPdfs(url, page) {
-    const cdxApiUrl = `https://web.archive.org/cdx/search/cdx?url=${url}/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=20&offset=${(page-1) * 20}`;
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const cdxApiUrl = `${proxyUrl}https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=20&offset=${(page-1) * 20}`;
 
     fetch(cdxApiUrl)
         .then(response => response.json())
