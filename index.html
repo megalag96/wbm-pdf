@@ -103,13 +103,22 @@ function displayResults(data, page) {
 
     if (data.length > 1) {
         for (let i = 1; i < data.length; i++) {
-            const archivedUrl = data[i][0];
-            const [timestamp, originalUrl] = archivedUrl.split('|');
+          const archivedUrl = data[i][0];
+    
+          // Use a regular expression to extract timestamp and originalUrl, allowing for flexibility in the format
+          const match = archivedUrl.match(/^([^,]+),(.+)$/);
+          if (match) {
+            const timestamp = match[1];
+            const originalUrl = match[2];
+    
             const pdfUrl = `https://web.archive.org/web/${timestamp}/${originalUrl}`;
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
             resultItem.innerHTML = `<a href="${pdfUrl}" target="_blank">${pdfUrl}</a>`;
             resultsDiv.appendChild(resultItem);
+          } else {
+            console.error("Unexpected archivedUrl format:", archivedUrl); 
+          }
         }
 
         const prevButton = document.createElement('button');
