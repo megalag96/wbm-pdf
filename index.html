@@ -88,20 +88,29 @@ function fetchArchivedPdfs(url, page) {
 
   fetch(cdxApiUrl)
     .then(response => {
-      if (!response.ok) { // Check if the response status is OK
+      if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
     })
     .then(data => {
-      const parsedData = JSON.parse(data.contents);
-      const totalResults = parsedData[0][0];
-      displayResults(parsedData, page, totalResults);
+      try {
+        const parsedData = JSON.parse(data.contents);
+        const totalResults = parsedData.length > 0 ? parsedData[0][0] : 0; // Handle empty response
+        displayResults(parsedData, page, totalResults);
+      } catch (jsonError) {
+        console.error('Error parsing JSON:', jsonError);
+        // Attempt to extract data directly from the response if parsing fails
+        const textData = data.contents;
+        const lines = textData.split('\n');
+        const extractedData = lines.map(line => line.split(' '));
+        const totalResults = extractedData.length > 0 ? extractedData[0][0] : 0;
+        displayResults(extractedData, page, totalResults);
+      }
     })
     .catch(error => {
       console.error('Error fetching or parsing data:', error);
-      // Display an error message to the user (e.g., using an alert or updating the resultsDiv)
-      resultsDiv.innerHTML = 'An error occurred. Please try again later.'; 
+      resultsDiv.innerHTML = 'An error occurred. Please try again later.';
     });
 }
 
