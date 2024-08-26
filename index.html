@@ -83,7 +83,7 @@ document.getElementById('searchForm').addEventListener('submit', function(event)
 
 function fetchArchivedPdfs(url, page) {
     const proxyUrl = "https://api.allorigins.win/get?url=";
-    const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=/' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=50')}`;
+    const cdxApiUrl = `${proxyUrl}${encodeURIComponent('https://web.archive.org/cdx/search/cdx?url=' + url + '/*&output=json&fl=original&filter=statuscode:200&filter=mimetype:application/pdf&collapse=digest&limit=50')}`;
 
     fetch(cdxApiUrl)
         .then(response => response.json())
